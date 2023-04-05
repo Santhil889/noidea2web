@@ -1,32 +1,29 @@
 package com.example.noidea2;
 
 //import com.example.noidea2.model.admin.Admin;
-import com.example.noidea2.model.doc.DocCreds;
 //import com.example.noidea2.repo.admin.AdminRepo;
-import com.example.noidea2.repo.doc.DocCredsRepo;
+import com.example.noidea2.model.auth.Creds;
+import com.example.noidea2.repo.auth.CredsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @SpringBootApplication
 public class Noidea2Application {
 
-//	@Autowired
-//	private DocCredsRepo docCredsRepo;
+	@Autowired
+	private CredsRepo credsRepo;
 
 //	@Autowired
 //	private AdminRepo adminRepo;
 //
-//	@PostConstruct
-//	public void initAdmin(){
-//		Admin a=new Admin(1,"admin","admin");
-//		adminRepo.save(a);
-//	}
+	@PostConstruct
+	public void initAdmin(){
+		Creds a=new Creds(1,"admin","admin@admin.com","admin",0);
+		credsRepo.save(a);
+	}
 //	@PostConstruct
 //	public void initUser(){
 //		List<DocCreds> users= Stream.of(

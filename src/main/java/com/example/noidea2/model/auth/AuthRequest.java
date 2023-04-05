@@ -1,4 +1,4 @@
-package com.example.noidea2.model.doc;
+package com.example.noidea2.model.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class AuthRequest {
     private String username;
     private String password;
+    private Integer role;
 }

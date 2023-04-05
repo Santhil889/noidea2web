@@ -1,6 +1,6 @@
 package com.example.noidea2.filter;
 
-import com.example.noidea2.service.doc.DocUserDetailService;
+import com.example.noidea2.service.auth.CustomUserDetailService;
 import com.example.noidea2.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +22,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
-    private DocUserDetailService service;
+    private CustomUserDetailService service;
 
 
     @Override
