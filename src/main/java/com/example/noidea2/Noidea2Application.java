@@ -1,8 +1,8 @@
 package com.example.noidea2;
 
-import com.example.noidea2.model.admin.Admin;
+//import com.example.noidea2.model.admin.Admin;
 import com.example.noidea2.model.doc.DocCreds;
-import com.example.noidea2.repo.admin.AdminRepo;
+//import com.example.noidea2.repo.admin.AdminRepo;
 import com.example.noidea2.repo.doc.DocCredsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -19,14 +19,14 @@ public class Noidea2Application {
 //	@Autowired
 //	private DocCredsRepo docCredsRepo;
 
-	@Autowired
-	private AdminRepo adminRepo;
-
-	@PostConstruct
-	public void initAdmin(){
-		Admin a=new Admin(1,"admin","admin");
-		adminRepo.save(a);
-	}
+//	@Autowired
+//	private AdminRepo adminRepo;
+//
+//	@PostConstruct
+//	public void initAdmin(){
+//		Admin a=new Admin(1,"admin","admin");
+//		adminRepo.save(a);
+//	}
 //	@PostConstruct
 //	public void initUser(){
 //		List<DocCreds> users= Stream.of(
