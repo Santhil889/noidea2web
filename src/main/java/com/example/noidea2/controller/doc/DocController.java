@@ -10,9 +10,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@CrossOrigin
+//@CrossOrigin()
 public class DocController {
     @Autowired
     private JwtUtil jwtUtil;
@@ -51,6 +52,19 @@ public class DocController {
         Creds c=credsRepo.findByUsername(uname);
         if(c.getRole()!=0) throw new Exception("Chal na admin ko bhej");
         return docRepo.findAll();
+    }
+
+    @PutMapping("/doc/change/{id}")
+    public String changeDocDetails(@PathVariable Integer id,@RequestBody DocDetails dd,@RequestHeader("Authorization") String token) throws Exception{
+        token=token.substring(7);
+        String uname=jwtUtil.extractUsername(token);
+        Creds c=credsRepo.findByUsername(uname);
+        if(c.getRole()!=0) throw new Exception("Chal na admin ko bhej");
+        DocDetails d=docRepo.findById(id).get();
+        if(d==null) throw new Exception("no id found");
+        docRepo.delete(d);
+        docRepo.save(dd);
+        return "Ho gya update";
     }
 
 }

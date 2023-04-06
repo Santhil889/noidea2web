@@ -5,14 +5,17 @@ import com.example.noidea2.model.auth.Creds;
 import com.example.noidea2.repo.auth.CredsRepo;
 import com.example.noidea2.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.net.http.HttpHeaders;
 
 @RestController
-@CrossOrigin
+//@CrossOrigin(allowedHeaders = {"Authorization", "Origin"})
 public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
@@ -22,11 +25,18 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    @GetMapping("/")
-    public String welcome(@RequestHeader("Authorization") String token){
+    @GetMapping("/try/something")
+    public String welcome(@RequestHeader("Authorization") String token) throws Exception{
+        try{
+//        if(token==null) throw new Exception("no token provided");
         token= token.substring(7);
         String uname=jwtUtil.extractUsername(token);
+        System.out.println("Kall aya tha yaha par");
         return "hello "+uname;
+        }catch (Exception e){
+            throw e;
+        }
+
     }
 
     @GetMapping("/only/admin")
@@ -53,17 +63,22 @@ public class AuthController {
     }
 
     @PostMapping("/doc/register")
-    public String newReg(@RequestBody Creds registerRequest) throws Exception{
-        if(registerRequest.getRole() != 1) throw new Exception("Not doctor added");
+    public Integer newReg(@RequestBody Creds registerRequest,@RequestHeader("Authorization") String token) throws Exception{
+        token=token.substring(7);
+        String uname=jwtUtil.extractUsername(token);
+        Creds c=credsRepo.findByUsername(uname);
+        if(c.getRole()!=0) throw new Exception("Chal na admin ko bhej");
         try{
-            credsRepo.save(registerRequest);
+            Creds ct = credsRepo.save(registerRequest);
+            return ct.getId();
         }catch (Exception ex){
 //            System.out.println(ex);
             throw new Exception(ex);
         }
-        return jwtUtil.generateToken(registerRequest.getUsername());
+
     }
 
+    @CrossOrigin
     @PostMapping("/admin/authenticate")
     public String generateTokenforAdmin(@RequestBody AuthRequest authRequest) throws Exception{
 //        Creds t=new Creds(1,"hello","hellotry","123",0);
@@ -87,5 +102,4 @@ public class AuthController {
         System.out.println(xyz);
         return xyz;
     }
-
 }

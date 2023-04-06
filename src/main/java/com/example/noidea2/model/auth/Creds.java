@@ -2,6 +2,7 @@ package com.example.noidea2.model.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
 
 import javax.management.relation.Role;
@@ -12,9 +13,10 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "docCreds")
+@Table(name = "creds")
 public class Creds {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String username;
     private String email;
