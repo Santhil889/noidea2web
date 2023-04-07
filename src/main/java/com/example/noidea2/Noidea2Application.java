@@ -7,6 +7,9 @@ import com.example.noidea2.repo.auth.CredsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.PostConstruct;
 
@@ -24,6 +27,16 @@ public class Noidea2Application {
 		Creds a=new Creds(1,"admin","admin@admin.com","admin",0);
 		credsRepo.save(a);
 	}
+
+//	@Bean
+//	public WebMvcConfigurer corsConfigurer() {
+//		return new WebMvcConfigurer() {
+//			@Override
+//			public void addCorsMappings(CorsRegistry registry) {
+//				registry.addMapping("/**").allowedOrigins("*");
+//			}
+//		};
+//	}
 //	@PostConstruct
 //	public void initUser(){
 //		List<DocCreds> users= Stream.of(

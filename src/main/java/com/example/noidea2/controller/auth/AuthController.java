@@ -6,6 +6,8 @@ import com.example.noidea2.repo.auth.CredsRepo;
 import com.example.noidea2.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +15,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.net.http.HttpHeaders;
+import java.util.Map;
 
 @RestController
-//@CrossOrigin(allowedHeaders = {"Authorization", "Origin"})
+@CrossOrigin
 public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
@@ -26,13 +29,13 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
 
     @GetMapping("/try/something")
-    public String welcome(@RequestHeader("Authorization") String token) throws Exception{
+    public ResponseEntity<String> welcome(@RequestHeader("Authorization") String token) throws Exception{
+        if(token==null) System.out.println("Hello this is not working");;
         try{
-//        if(token==null) throw new Exception("no token provided");
         token= token.substring(7);
         String uname=jwtUtil.extractUsername(token);
         System.out.println("Kall aya tha yaha par");
-        return "hello "+uname;
+        return ResponseEntity.ok("hello "+uname);
         }catch (Exception e){
             throw e;
         }
@@ -40,19 +43,15 @@ public class AuthController {
     }
 
     @GetMapping("/only/admin")
-    public String onlyAdmin(@RequestHeader("Authorization") String token) throws Exception{
-        token= token.substring(7);
-        String uname=jwtUtil.extractUsername(token);
-        Creds c=credsRepo.findByUsername(uname);
-        if(c.getRole()==0)
+    public String onlyAdmin() {
         return "hello";
-        else throw new Exception("Not Admin");
     }
 
     @PostMapping("/doc/authenticate")
     public String generateToken(@RequestBody AuthRequest authRequest) throws Exception{
+        if(authRequest.getRole()!=credsRepo.findByUsername(authRequest.getUsername()).getRole()) throw new Exception("Not Doctor");
         try{
-            if(authRequest.getRole()!=1) throw new Exception("Not Doctor");
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(),authRequest.getPassword())
             );
@@ -78,20 +77,17 @@ public class AuthController {
 
     }
 
-    @CrossOrigin
     @PostMapping("/admin/authenticate")
-    public String generateTokenforAdmin(@RequestBody AuthRequest authRequest) throws Exception{
-//        Creds t=new Creds(1,"hello","hellotry","123",0);
-//        credsRepo.save(t);
-//        return "hello added";
-        if(authRequest.getRole() != 0 ) throw new Exception("Not Admin");
+    public ResponseEntity<String> generateTokenforAdmin(@RequestBody AuthRequest authRequest) throws Exception{
+        System.out.println(authRequest.getRole()+" sakfanlskfnalk");
+        if(authRequest.getRole() != credsRepo.findByUsername(authRequest.getUsername()).getRole() ) {
+//            throw new Exception("Not Admin");
+            return new ResponseEntity<>(
+                    "Bad Credentials",
+                    HttpStatus.BAD_REQUEST);
+        }
         System.out.println(authRequest.getUsername());
         try{
-//            String email=authRequest.get("email");
-//            String password= authRequest.get("password");
-//            if(email.equals("admin@admin.com") && password.equals("admin")){
-//                System.out.println( jwtUtil.generateToken(authRequest.get("email")));
-//            }
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(),authRequest.getPassword())
             );
@@ -99,7 +95,8 @@ public class AuthController {
             throw new Exception("Invalid Username/Password");
         }
         String xyz=jwtUtil.generateToken(authRequest.getUsername());
-        System.out.println(xyz);
-        return xyz;
+        return new ResponseEntity<>(
+                xyz,
+                HttpStatus.OK);
     }
 }

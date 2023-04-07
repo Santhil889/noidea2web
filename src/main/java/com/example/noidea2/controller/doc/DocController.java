@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-//@CrossOrigin()
+@CrossOrigin()
 public class DocController {
     @Autowired
     private JwtUtil jwtUtil;
@@ -52,6 +52,17 @@ public class DocController {
         Creds c=credsRepo.findByUsername(uname);
         if(c.getRole()!=0) throw new Exception("Chal na admin ko bhej");
         return docRepo.findAll();
+    }
+
+
+    @GetMapping("/doc/get/{id}")
+    public Optional<DocDetails> getone(@RequestHeader("Authorization") String token,@PathVariable Integer id) throws Exception{
+        token=token.substring(7);
+        String uname=jwtUtil.extractUsername(token);
+        Creds c=credsRepo.findByUsername(uname);
+        if(c.getRole()!=0) throw new Exception("Chal na admin ko bhej");
+
+        return docRepo.findById(id);
     }
 
     @PutMapping("/doc/change/{id}")

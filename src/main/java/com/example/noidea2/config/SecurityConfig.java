@@ -2,6 +2,7 @@ package com.example.noidea2.config;
 
 import com.example.noidea2.filter.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +27,6 @@ import java.util.Arrays;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //    @Autowired
 //    private DocUserDetailService docUserDetailService;
-
     @Autowired
     private JwtFilter jwtFilter;
 //
@@ -48,13 +48,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests().antMatchers("/admin/**","/doc/authenticate","/pat/**")
+        http.cors().and().csrf().disable().authorizeRequests().antMatchers("/admin/**","/doc/authenticate","/pat/**")
                 .permitAll().anyRequest().authenticated()
                 .and().exceptionHandling().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);;
     }
+
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+//        return source;
+//    }
 
 
 }
