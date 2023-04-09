@@ -9,5 +9,6 @@ public interface CredsRepo extends JpaRepository<Creds,Integer> {
 
     Creds findByEmail(String email);
 
+    Creds findById(int id);
 
 }

@@ -33,6 +33,7 @@ public class DocController {
 
     @PostMapping("/doc/add")
     public String addDoc(@RequestBody DocDetails dd,@RequestHeader("Authorization") String token) throws Exception{
+        if(dd== null || !credsRepo.findById(dd.getDid()).isPresent()) throw new Exception("nahi hoga add");
         token=token.substring(7);
         String uname=jwtUtil.extractUsername(token);
         Creds c=credsRepo.findByUsername(uname);

@@ -17,6 +17,7 @@ public class DocDetails {
     @Id
     private Integer did;
     private String name;
+    private String phone;
     @JsonFormat(pattern = "yyyy/MM/dd")
     private Date bDate;
     private String email;
