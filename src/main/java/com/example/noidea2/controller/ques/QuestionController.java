@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @RestController
 @CrossOrigin
 public class QuestionController {
@@ -38,7 +40,9 @@ public class QuestionController {
             token = token.substring(7);
             String uname = jwtUtil.extractUsername(token);
             Creds c = credsRepo.findByUsername(uname);
-            if (c.getRole() != 2 || question.getQuestionId().getPid() != c.getId()) throw new Exception("error");
+            if (c.getRole() != 2) throw new Exception("error");
+            question.getQuestionId().setPid(c.getId());
+            question.getQuestionId().setFilledtime(new Date());
             int score= calcScore(question);
             PatDetails pd= patRepo.findByPid(question.getQuestionId().getPid());
             pd.setScore(score);
@@ -59,8 +63,6 @@ public class QuestionController {
         q6= question.getQ6();
         q7= question.getQ7();
         q8= question.getQ8();
-        q9= question.getQ9();
-        q10= question.getQ10();
-        return (q1+q2+q3+q4+q5+q6+q7+q8+q9+q10)/10;
+        return (q1+q2+q3+q4+q5+q6+q7+q8)/8;
     }
 }
