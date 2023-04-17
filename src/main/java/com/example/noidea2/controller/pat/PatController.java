@@ -11,10 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
@@ -70,6 +67,19 @@ public class PatController {
             patRepo.save(pd);
             return "Patient details added";
         }catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @PostMapping("/patget/detail")
+    public PatDetails getdetailsofpat(@RequestHeader("Authorization") String token) throws Exception{
+        try{
+            token=token.substring(7);
+            String uname=jwtUtil.extractUsername(token);
+            Creds c=credsRepo.findByUsername(uname);
+            if(c.getRole()!=2) throw new Exception("Not Patient");
+            return patRepo.findByPid(c.getId());
+        }catch (Exception e){
             throw e;
         }
     }
