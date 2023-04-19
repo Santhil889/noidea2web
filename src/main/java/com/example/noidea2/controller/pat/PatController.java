@@ -83,4 +83,17 @@ public class PatController {
             throw e;
         }
     }
+
+    @PostMapping("/pat/getall")
+    public Integer getpatcount(@RequestHeader("Authorization") String token) throws Exception{
+        try{
+            token=token.substring(7);
+            String uname=jwtUtil.extractUsername(token);
+            Creds c=credsRepo.findByUsername(uname);
+            if(c.getRole()!=0) throw new Exception("Not Admin");
+            return patRepo.findAll().size();
+        }catch (Exception e){
+            throw e;
+        }
+    }
 }
