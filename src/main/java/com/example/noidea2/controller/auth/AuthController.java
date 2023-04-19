@@ -4,6 +4,9 @@ import com.example.noidea2.model.auth.AuthRequest;
 import com.example.noidea2.model.auth.Creds;
 import com.example.noidea2.repo.auth.CredsRepo;
 import com.example.noidea2.util.JwtUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
@@ -48,7 +51,7 @@ public class AuthController {
     }
 
     @PostMapping("/doc/authenticate")
-    public String generateToken(@RequestBody AuthRequest authRequest) throws Exception{
+    public DocReturnObject generateToken(@RequestBody AuthRequest authRequest) throws Exception{
         if(authRequest.getRole()!=credsRepo.findByUsername(authRequest.getUsername()).getRole()) throw new Exception("Not Doctor");
         try{
 
@@ -58,7 +61,10 @@ public class AuthController {
         }catch (Exception ex){
             throw new Exception("Invalid Username/Password");
         }
-        return jwtUtil.generateToken(authRequest.getUsername());
+        String token=jwtUtil.generateToken(authRequest.getUsername());
+        String uname=jwtUtil.extractUsername(token);
+        Creds c=credsRepo.findByUsername(uname);
+        return new DocReturnObject(token , c.getId());
     }
 
     @PostMapping("/doc/register")
@@ -99,4 +105,12 @@ public class AuthController {
                 xyz,
                 HttpStatus.OK);
     }
+}
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+class DocReturnObject{
+    private String jwttoken;
+    private Integer did;
 }
