@@ -29,6 +29,9 @@ public class PatDetails {
     @JsonFormat(pattern = "yyyy/MM/dd")
     private Date bDate;
 
+    private int age;
+    private String bloodgroup;
+
     private int gender,height,weight;
 
     private String journal;
