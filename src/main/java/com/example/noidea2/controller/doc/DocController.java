@@ -61,9 +61,9 @@ public class DocController {
         token=token.substring(7);
         String uname=jwtUtil.extractUsername(token);
         Creds c=credsRepo.findByUsername(uname);
-        if(c.getRole()!=0) throw new Exception("Chal na admin ko bhej");
-
-        return docRepo.findById(id);
+        if(c.getRole()==0 || (c.getRole()==1 && c.getId() == id) )
+            return docRepo.findById(id);
+        else throw new Exception("Not Authorized");
     }
 
     @PutMapping("/doc/change/{id}")
