@@ -104,6 +104,51 @@ public class TaskController {
             throw e;
         }
     }
+
+    @PostMapping("/getall/tesks/typeone")
+    public List<Task> gettypeone(@RequestHeader("Authorization") String token) throws Exception{
+        try{
+            token = token.substring(7);
+            String uname = jwtUtil.extractUsername(token);
+            Creds c = credsRepo.findByUsername(uname);
+            if(c.getRole()==1){
+                return taskRepo.findAllByTasktype(1);
+            }
+            else throw new Exception("Not Doctor");
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @PostMapping("/getall/tesks/typetwo")
+    public List<Task> gettypetwo(@RequestHeader("Authorization") String token) throws Exception{
+        try{
+            token = token.substring(7);
+            String uname = jwtUtil.extractUsername(token);
+            Creds c = credsRepo.findByUsername(uname);
+            if(c.getRole()==1){
+                return taskRepo.findAllByTasktype(2);
+            }
+            else throw new Exception("Not Doctor");
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @PostMapping("/getall/tesks/typethree")
+    public List<Task> gettypethree(@RequestHeader("Authorization") String token) throws Exception{
+        try{
+            token = token.substring(7);
+            String uname = jwtUtil.extractUsername(token);
+            Creds c = credsRepo.findByUsername(uname);
+            if(c.getRole()==1){
+                return taskRepo.findAllByTasktype(3);
+            }
+            else throw new Exception("Not Doctor");
+        }catch (Exception e){
+            throw e;
+        }
+    }
 }
 
 @AllArgsConstructor
