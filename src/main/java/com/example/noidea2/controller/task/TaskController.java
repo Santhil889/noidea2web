@@ -19,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -60,6 +61,7 @@ public class TaskController {
         if(c.getRole() != 1) throw new Exception("not doctor");
         int did=c.getId();
         if(assignedTask.getDid() != did) throw new Exception("Wrong Doctor");
+        assignedTask.setAssigneddate(new Date());
         return assignedTaskRepo.save(assignedTask);
 //        return "added task successfully";
     }
@@ -81,7 +83,7 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/get/tasks/{pid}")
+    @GetMapping("/get/assigned/tasks/{pid}")
     public List<AssignedTask> gettask(@RequestHeader("Authorization") String token,@PathVariable Integer pid ) throws Exception{
         try{
             token = token.substring(7);
@@ -104,6 +106,40 @@ public class TaskController {
             throw e;
         }
     }
+
+    @GetMapping("/get/assigned/taskids/{pid}")
+    public List<Integer> gettaskids(@RequestHeader("Authorization") String token,@PathVariable Integer pid ) throws Exception{
+        try{
+            token = token.substring(7);
+            String uname = jwtUtil.extractUsername(token);
+            Creds c = credsRepo.findByUsername(uname);
+            if (c.getRole() == 2) {
+                if (c.getId() != pid)
+                    throw new Exception("Invalid patient");
+                List<AssignedTask> arr =assignedTaskRepo.getAllByPid(pid);
+                ArrayList<Integer> temp= new ArrayList<Integer>();
+                for(AssignedTask a:arr){
+                    temp.add(a.getTid());
+                }
+                return temp;
+            }
+            else if (c.getRole() == 1) {
+                if (consultRepo.getByConsultId_Pid(pid).getConsultId().getDid() != c.getId())
+                    throw new Exception("Not appropriate doctor");
+                int did = consultRepo.getByConsultId_Pid(pid).getConsultId().getDid();
+                List<AssignedTask> arr =assignedTaskRepo.getAllByDidAndPid(did, pid);
+                ArrayList<Integer> temp= new ArrayList<Integer>();
+                for(AssignedTask a:arr){
+                    temp.add(a.getTid());
+                }
+                return temp;
+            }
+            else throw new Exception("Not assicible by admin");
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
 
     @PostMapping("/getall/tesks/typeone")
     public List<Task> gettypeone(@RequestHeader("Authorization") String token) throws Exception{
