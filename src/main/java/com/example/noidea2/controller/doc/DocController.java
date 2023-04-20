@@ -31,7 +31,7 @@ public class DocController {
     @Autowired
     private PatRepo patRepo;
 
-    @GetMapping("/doc/getcount")
+    @PostMapping("/doc/getcount")
     public Long countnoofdoc(@RequestHeader("Authorization") String token) throws Exception{
         token=token.substring(7);
         String uname=jwtUtil.extractUsername(token);
@@ -55,7 +55,7 @@ public class DocController {
         return "added doc details";
     }
 
-    @GetMapping("/doc/getall")
+    @PostMapping("/doc/getall")
     public List<DocDetails> getall(@RequestHeader("Authorization") String token) throws Exception{
         token=token.substring(7);
         String uname=jwtUtil.extractUsername(token);
@@ -65,7 +65,7 @@ public class DocController {
     }
 
 
-    @GetMapping("/doc/get/{id}")
+    @PostMapping("/doc/get/{id}")
     public Optional<DocDetails> getone(@RequestHeader("Authorization") String token,@PathVariable Integer id) throws Exception{
         token=token.substring(7);
         String uname=jwtUtil.extractUsername(token);
@@ -75,7 +75,7 @@ public class DocController {
         else throw new Exception("Not Authorized");
     }
 
-    @PutMapping("/doc/change/{id}")
+    @PostMapping("/doc/change/{id}")
     public String changeDocDetails(@PathVariable Integer id,@RequestBody DocDetails dd,@RequestHeader("Authorization") String token) throws Exception{
         token=token.substring(7);
         String uname=jwtUtil.extractUsername(token);

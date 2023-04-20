@@ -56,7 +56,7 @@ public class ConsultController {
         }
     }
 
-    @GetMapping("/consult/{did}")
+    @PostMapping("/consult/{did}")
     public List<Creds> getallpat(@RequestHeader("Authorization") String token,@PathVariable Integer did) throws Exception{
         try{
 //            List<Creds> temp =null;
@@ -133,7 +133,7 @@ public class ConsultController {
         }
     }
 
-    @GetMapping("/assdoctor")
+    @PostMapping("/assdoctor")
     public Optional<DocDetails> getassdoc(@RequestHeader("Authorization") String token) throws Exception{
         try{
             token = token.substring(7);

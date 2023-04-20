@@ -83,7 +83,7 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/get/assigned/tasks/{pid}")
+    @PostMapping("/get/assigned/tasks/{pid}")
     public List<AssignedTask> gettask(@RequestHeader("Authorization") String token,@PathVariable Integer pid ) throws Exception{
         try{
             token = token.substring(7);
@@ -107,7 +107,7 @@ public class TaskController {
         }
     }
 
-    @GetMapping("/get/assigned/taskids/{pid}")
+    @PostMapping("/get/assigned/taskids/{pid}")
     public List<Integer> gettaskids(@RequestHeader("Authorization") String token,@PathVariable Integer pid ) throws Exception{
         try{
             token = token.substring(7);

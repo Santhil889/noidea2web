@@ -45,7 +45,7 @@ public class AuthController {
         javaMailSender.send(message);
     }
 
-    @GetMapping("/try/something")
+    @PostMapping("/try/something")
     public ResponseEntity<String> welcome(@RequestHeader("Authorization") String token) throws Exception{
         if(token==null) System.out.println("Hello this is not working");;
         try{
@@ -59,7 +59,7 @@ public class AuthController {
 
     }
 
-    @GetMapping("/only/admin")
+    @PostMapping("/only/admin")
     public String onlyAdmin() {
         return "hello";
     }
