@@ -19,6 +19,5 @@ import java.util.Date;
 @Data
 public class QuestionId implements Serializable {
     private Integer pid;
-    @Temporal(TemporalType.TIMESTAMP)
     private Date filledtime;
 }

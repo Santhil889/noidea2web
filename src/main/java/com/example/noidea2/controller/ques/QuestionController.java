@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @RestController
 @CrossOrigin
@@ -53,8 +54,27 @@ public class QuestionController {
         }
     }
 
+    @PostMapping("/get/latestquestion/{pid}")
+    public Question getlatestq(@RequestHeader("Authorization") String token, @PathVariable int pid) throws Exception{
+        try{
+            token = token.substring(7);
+            String uname = jwtUtil.extractUsername(token);
+            Creds c = credsRepo.findByUsername(uname);
+//            System.out.println(consultRepo.getByConsultId_Pid(pid).getConsultId().getDid() == c.getId());
+            if(c.getRole() == 1 && consultRepo.getByConsultId_Pid(pid).getConsultId().getDid() == c.getId()) {
+                return questionRepo.findByQuestionIdPidOrderByQuestionIdFilledtimeDesc(pid).get(0);
+//                return null;/
+            }
+            else throw new Exception("Something went horribly wrong");
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+
+
     private int calcScore(Question question) {
-        int q1,q2,q3,q4,q5,q6,q7,q8,q9,q10;
+        int q1,q2,q3,q4,q5,q6,q7,q8;
         q1= question.getQ1();
         q2= question.getQ2();
         q3= question.getQ3();
