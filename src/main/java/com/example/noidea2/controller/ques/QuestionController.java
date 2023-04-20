@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -55,14 +56,18 @@ public class QuestionController {
     }
 
     @PostMapping("/get/latestquestion/{pid}")
-    public Question getlatestq(@RequestHeader("Authorization") String token, @PathVariable int pid) throws Exception{
+    public List<Integer> getlatestq(@RequestHeader("Authorization") String token, @PathVariable int pid) throws Exception{
         try{
             token = token.substring(7);
             String uname = jwtUtil.extractUsername(token);
             Creds c = credsRepo.findByUsername(uname);
 //            System.out.println(consultRepo.getByConsultId_Pid(pid).getConsultId().getDid() == c.getId());
             if(c.getRole() == 1 && consultRepo.getByConsultId_Pid(pid).getConsultId().getDid() == c.getId()) {
-                return questionRepo.findByQuestionIdPidOrderByQuestionIdFilledtimeDesc(pid).get(0);
+                Question q=questionRepo.findByQuestionIdPidOrderByQuestionIdFilledtimeDesc(pid).get(0);
+                ArrayList<Integer> t= new ArrayList<>();
+                t.add(q.getQ1());t.add(q.getQ2());t.add(q.getQ3());t.add(q.getQ4());
+                t.add(q.getQ5());t.add(q.getQ6());t.add(q.getQ7());t.add(q.getQ8());
+                return t;
 //                return null;/
             }
             else throw new Exception("Something went horribly wrong");
