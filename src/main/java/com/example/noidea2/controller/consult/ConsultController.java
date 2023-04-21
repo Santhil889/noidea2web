@@ -56,6 +56,20 @@ public class ConsultController {
         }
     }
 
+    @PostMapping("/activate/patient/{pid}")
+    public Consult activate(@RequestHeader("Authorization") String token,@PathVariable int pid) throws Exception{
+        try{
+            token= token.substring(7);
+            String uname=jwtUtil.extractUsername(token);
+            Creds c=credsRepo.findByUsername(uname);
+            if(c.getRole()!=1) throw new Exception("Not doctor");
+            ConsultId consultId=new ConsultId(c.getId(),pid);
+            return consultRepo.save(new Consult(consultId,23,45,"Consulted Patient Once",new Date()));
+        }catch (Exception e) {
+            throw e;
+        }
+    }
+
     @PostMapping("/consult/{did}")
     public List<Creds> getallpat(@RequestHeader("Authorization") String token,@PathVariable Integer did) throws Exception{
         try{

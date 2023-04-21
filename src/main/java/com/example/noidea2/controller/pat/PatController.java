@@ -6,6 +6,9 @@ import com.example.noidea2.model.pat.PatDetails;
 import com.example.noidea2.repo.auth.CredsRepo;
 import com.example.noidea2.repo.pat.PatRepo;
 import com.example.noidea2.util.JwtUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +43,7 @@ public class PatController {
     }
 
     @PostMapping("/pat/authenticate")
-    public String login(@RequestBody AuthRequest pd) throws Exception{
+    public PatReruenObj login(@RequestBody AuthRequest pd) throws Exception{
         if(pd==null) throw new Exception("kya be");
         System.out.println(pd.getRole()+" sakfanlskfnalk");
         if(pd.getRole().intValue()  !=  credsRepo.findByUsername(pd.getUsername()).getRole() ) {
@@ -55,13 +58,30 @@ public class PatController {
             throw new Exception("Invalid Username/Password");
         }
         String xyz=jwtUtil.generateToken(pd.getUsername());
-        System.out.println(xyz);
-        return xyz;
+        Creds tt= credsRepo.findByUsername(pd.getUsername());
+
+        return new PatReruenObj(xyz,tt.getId());
     }
 
     @PostMapping("/pat/savedetail")
     public String savedetails(@RequestBody PatDetails pd) throws Exception{
         if(pd==null) throw new Exception("null valaue");
+        if(credsRepo.findById(pd.getPid()) == null) throw new Exception("Could not add random");
+        try{
+            patRepo.save(pd);
+            return "Patient details added";
+        }catch (Exception e) {
+            throw e;
+        }
+    }
+
+    @PostMapping("/pat/savepatdetailbytoken")
+    public String savedetailsbytoken(@RequestHeader("Authorization") String token,@RequestBody PatDetails pd) throws Exception{
+        if(pd==null) throw new Exception("null valaue");
+        token=token.substring(7);
+        String uname=jwtUtil.extractUsername(token);
+        Creds c=credsRepo.findByUsername(uname);
+        pd.setPid(c.getId());
         if(credsRepo.findById(pd.getPid()) == null) throw new Exception("Could not add random");
         try{
             patRepo.save(pd);
@@ -96,4 +116,12 @@ public class PatController {
             throw e;
         }
     }
+}
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+class PatReruenObj{
+    private String token;
+    private int id;
 }

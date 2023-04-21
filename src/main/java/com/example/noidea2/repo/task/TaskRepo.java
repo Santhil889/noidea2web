@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface TaskRepo extends JpaRepository<Task,Integer> {
     public List<Task> findAllByTasktype(int ttype);
+
+    public Task findByTid(int tid);
 }

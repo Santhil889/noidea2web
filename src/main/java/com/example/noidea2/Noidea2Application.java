@@ -68,7 +68,7 @@ public class Noidea2Application {
 			Date current= new Date();
 			if(a.getAssigneddate().before(current)) {
 				AssignedTask te=a;
-				te.setComplete(true);
+				te.setComplete(false);
 				assignedTaskRepo.save(te);
 			}
 		}
