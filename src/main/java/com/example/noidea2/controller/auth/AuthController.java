@@ -147,6 +147,58 @@ public class AuthController {
                 xyz,
                 HttpStatus.OK);
     }
+
+    @PostMapping("/doc/resetpwd")
+    public String restdocpwd(@RequestHeader("Authorization") String token,@RequestBody Resetpwd resetpwd ) throws Exception{
+
+        try{
+            token=token.substring(7);
+            String uname=jwtUtil.extractUsername(token);
+            Creds c=credsRepo.findByUsername(uname);
+            if(resetpwd.getRole() != credsRepo.findByUsername(uname).getRole()) throw new Exception("Something Invalid");
+            if(!c.getPassword().equals( resetpwd.getCurrentpwd())) throw new Exception("Invalid Current Pwd");
+            Creds t= c;
+            t.setPassword(resetpwd.getNewpwd());
+            credsRepo.save(t);
+            return "Changed pwd successfully";
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @PostMapping("/pat/resetpwd")
+    public Integer restpatpwd(@RequestHeader("Authorization") String token,@RequestBody Resetpwd resetpwd ) throws Exception{
+
+        try{
+            token=token.substring(7);
+            String uname=jwtUtil.extractUsername(token);
+            Creds c=credsRepo.findByUsername(uname);
+            if(resetpwd.getRole() != credsRepo.findByUsername(uname).getRole()) throw new Exception("Something Invalid");
+            System.out.println(c.getPassword());
+            if(!c.getPassword().equals(resetpwd.getCurrentpwd())) throw new Exception("Invalid Current Pwd");
+            Creds t= c;
+            t.setPassword(resetpwd.getNewpwd());
+            credsRepo.save(t);
+            return t.getId();
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @PostMapping("/forgotpass")
+    public String forgotdoc(@RequestBody Forgotpwd forgotpwd)throws Exception{
+        try{
+            Creds c=credsRepo.findByUsername(forgotpwd.getUsername());
+            if(forgotpwd.getRole() != credsRepo.findByUsername(forgotpwd.getUsername()).getRole()) throw new Exception("Something Invalid");
+            c.setPassword("1234");
+            credsRepo.save(c);
+            return "Retset Doc Password";
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+
 }
 
 @AllArgsConstructor
@@ -157,4 +209,19 @@ class DocReturnObject{
     private Integer did;
 }
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+class Resetpwd{
+    private String currentpwd,newpwd;
+    private int role;
+}
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+class Forgotpwd{
+    private String username;
+    private int role;
+}
 
