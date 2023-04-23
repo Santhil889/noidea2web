@@ -4,10 +4,15 @@ import com.example.noidea2.model.auth.Creds;
 import com.example.noidea2.model.consult.Consult;
 import com.example.noidea2.model.consult.ConsultId;
 import com.example.noidea2.model.doc.DocDetails;
+import com.example.noidea2.model.task.AssignedTask;
 import com.example.noidea2.repo.auth.CredsRepo;
 import com.example.noidea2.repo.consult.ConsultRepo;
 import com.example.noidea2.repo.doc.DocRepo;
+import com.example.noidea2.repo.task.AssignedTaskRepo;
 import com.example.noidea2.util.JwtUtil;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +32,9 @@ public class ConsultController {
     private CredsRepo credsRepo;
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private AssignedTaskRepo assignedTaskRepo;
     //filhaal manual
 
     @PostMapping("/consult/assign")
@@ -96,10 +104,10 @@ public class ConsultController {
     }
 
     @PostMapping("/consult/activ/{did}")
-    public List<Creds> getallactivpat(@RequestHeader("Authorization") String token,@PathVariable Integer did) throws Exception{
+    public List<xyz> getallactivpat(@RequestHeader("Authorization") String token,@PathVariable Integer did) throws Exception{
         try{
 //            List<Creds> temp =null;
-            ArrayList<Creds> temp = new ArrayList<Creds>();
+            ArrayList<xyz> temp = new ArrayList<xyz>();
             List<Consult> tempids;
             token= token.substring(7);
             String uname=jwtUtil.extractUsername(token);
@@ -110,7 +118,14 @@ public class ConsultController {
                     if(a.getIslastconsulted()!=null) {
                         int x = a.getConsultId().getPid();
                         System.out.println(x);
-                        temp.add(credsRepo.findById(x));
+                        List<AssignedTask> tt= assignedTaskRepo.getAllByPid(x);
+                        int compl=0;
+                        int assign=0;
+                        for(AssignedTask at: tt){
+                            if(at.isComplete()==true) compl++;
+                            assign++;
+                        }
+                        temp.add(new xyz(credsRepo.findById(x).getUsername(),x,compl,assign));
                     }
                 }
                 return  temp;
@@ -120,7 +135,15 @@ public class ConsultController {
             throw e;
         }
     }
-
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    class xyz{
+        private String uname;
+        private int pid;
+        private int completed;
+        private int assigned;
+    }
     @PostMapping("/consult/blocked/{did}")
     public List<Creds> getallblockedpat(@RequestHeader("Authorization") String token,@PathVariable Integer did) throws Exception{
         try{

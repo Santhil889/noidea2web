@@ -1,6 +1,7 @@
 package com.example.noidea2.model.task;
 
 import com.sun.istack.NotNull;
+import com.sun.istack.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,8 @@ public class Task {
     private Integer tid;
     @NotNull
     private Integer tasktype;
+    @Nullable
+    private String tasklink;
     @NotNull
     private String tasktext;
 }

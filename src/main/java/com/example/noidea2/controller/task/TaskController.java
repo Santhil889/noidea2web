@@ -97,7 +97,7 @@ public class TaskController {
                 List<AssignedTask> tt= assignedTaskRepo.getAllByPid(pid);
                 ArrayList<ListobjectReturn> temp=new ArrayList<ListobjectReturn>();
                 for(AssignedTask a:tt){
-                    temp.add(new ListobjectReturn(a,taskRepo.findByTid(a.getTid()).getTasktext()));
+                    temp.add(new ListobjectReturn(a,taskRepo.findByTid(a.getTid()).getTasklink(),taskRepo.findByTid(a.getTid()).getTasktext(),taskRepo.findByTid(a.getTid()).getTasktype()));
                 }
                 return temp;
             }
@@ -108,7 +108,7 @@ public class TaskController {
                 List<AssignedTask> tt=  assignedTaskRepo.getAllByDidAndPid(did, pid);
                 ArrayList<ListobjectReturn> temp=new ArrayList<ListobjectReturn>();
                 for(AssignedTask a:tt){
-                    temp.add(new ListobjectReturn(a,taskRepo.findByTid(a.getTid()).getTasktext()));
+                    temp.add(new ListobjectReturn(a,taskRepo.findByTid(a.getTid()).getTasklink(),taskRepo.findByTid(a.getTid()).getTasktext(),taskRepo.findByTid(a.getTid()).getTasktype()));
                 }
                 return temp;
 
@@ -246,5 +246,7 @@ class DeleteRequest{
 @Data
 class ListobjectReturn{
     private AssignedTask assignedTask;
+    private String tasklink;
     private String tasktext;
+    private int tasktype;
 }

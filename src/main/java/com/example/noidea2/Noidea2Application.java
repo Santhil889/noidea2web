@@ -45,18 +45,18 @@ public class Noidea2Application {
 	public void initTask(){
 //		Creds a=new Creds(1,"admin","admin@admin.com","admin",0);
 		List<Task> tasks= Stream.of(
-				new Task(1,1,"TYPE 1 TASK 1"),
-				new Task(2,1,"TYPE 1 TASK 2"),
-				new Task(3,1,"TYPE 1 TASK 3"),
-				new Task(4,1,"TYPE 1 TASK 4"),
-				new Task(5,2,"TYPE 2 TASK 1"),
-				new Task(6,2,"TYPE 2 TASK 2"),
-				new Task(7,2,"TYPE 2 TASK 3"),
-				new Task(8,2,"TYPE 2 TASK 4"),
-				new Task(9,3,"TYPE 3 TASK 1"),
-				new Task(10,3,"TYPE 3 TASK 2"),
-				new Task(11,3,"TYPE 3 TASK 3"),
-				new Task(12,3,"TYPE 3 TASK 4")
+				new Task(1,1,null,"TYPE 1 TASK 1"),
+				new Task(2,1,null,"TYPE 1 TASK 2"),
+				new Task(3,1,null,"TYPE 1 TASK 3"),
+				new Task(4,1,null,"TYPE 1 TASK 4"),
+				new Task(5,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 1"),
+				new Task(6,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 2"),
+				new Task(7,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 3"),
+				new Task(8,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 4"),
+				new Task(9,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 1"),
+				new Task(10,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 2"),
+				new Task(11,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 3"),
+				new Task(12,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 4")
 		).collect(Collectors.toList());
 		taskRepo.saveAll(tasks);
 	}

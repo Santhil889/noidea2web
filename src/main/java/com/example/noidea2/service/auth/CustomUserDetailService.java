@@ -18,8 +18,8 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Creds dc = credsRepo.findByUsername(username);
-        String dBuserName=dc.getEmail();
-        System.out.println(dBuserName+ " form DocUserDetailService ");
+//        String dBuserName=dc.getEmail();
+//        System.out.println(dBuserName+ " form DocUserDetailService ");
         if(dc == null){
             throw new UsernameNotFoundException("User not authorized.");
         }
