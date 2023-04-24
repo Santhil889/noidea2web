@@ -45,7 +45,7 @@ public class PatController {
     @PostMapping("/pat/authenticate")
     public PatReruenObj login(@RequestBody AuthRequest pd) throws Exception{
         if(pd==null) throw new Exception("kya be");
-        System.out.println(pd.getRole()+" sakfanlskfnalk");
+//        System.out.println(pd.getRole()+" sakfanlskfnalk");
         if(pd.getRole().intValue()  !=  credsRepo.findByUsername(pd.getUsername()).getRole() ) {
 //            throw new Exception("Not Admin");
             throw new Exception("Ja na Gandu");
