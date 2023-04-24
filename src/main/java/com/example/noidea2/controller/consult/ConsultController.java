@@ -72,7 +72,8 @@ public class ConsultController {
             Creds c=credsRepo.findByUsername(uname);
             if(c.getRole()!=1) throw new Exception("Not doctor");
             ConsultId consultId=new ConsultId(c.getId(),pid);
-            return consultRepo.save(new Consult(consultId,23,45,"Consulted Patient Once",new Date()));
+            String note= consultRepo.getByConsultId_Pid(pid).getNote();
+            return consultRepo.save(new Consult(consultId,23,45,note,new Date()));
         }catch (Exception e) {
             throw e;
         }

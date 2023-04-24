@@ -2,6 +2,7 @@ package com.example.noidea2.controller.pat;
 
 //import com.example.noidea2.controller.task.ListobjectReturn;
 import com.example.noidea2.model.auth.Creds;
+import com.example.noidea2.model.consult.Consult;
 import com.example.noidea2.model.pat.PatJournal;
 import com.example.noidea2.model.task.AssignedTask;
 import com.example.noidea2.repo.auth.CredsRepo;
@@ -62,6 +63,39 @@ public class PatJournalController {
         }
     }
 
+    @PostMapping("/getnote/consult")
+    public String getnote(@RequestHeader("Authorization") String token, @RequestBody AskObj askObj) throws Exception{
+        try{
+            token = token.substring(7);
+            String uname = jwtUtil.extractUsername(token);
+            Creds c = credsRepo.findByUsername(uname);
+            if(c.getRole()==1 && c.getId()==consultRepo.getByConsultId_Pid(askObj.getPid()).getConsultId().getDid()){
+                return consultRepo.getByConsultId_Pid(askObj.getPid()).getNote();
+            }
+            else throw new Exception("Invalid");
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @PostMapping("/setnote/consult")
+    public String setnote(@RequestHeader("Authorization") String token, @RequestBody AskObj askObj) throws Exception{
+        try{
+            token = token.substring(7);
+            String uname = jwtUtil.extractUsername(token);
+            Creds c = credsRepo.findByUsername(uname);
+            if(c.getRole()==1 && c.getId()==consultRepo.getByConsultId_Pid(askObj.getPid()).getConsultId().getDid()){
+                Consult cd= consultRepo.getByConsultId_Pid(askObj.getPid());
+                cd.setNote(askObj.getNote());
+                consultRepo.save(cd);
+                return "Updated Notes";
+            }
+            else throw new Exception("Invalid");
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
     @PostMapping("/patget/status/{pid}")
     public List<ListObj> status(@RequestHeader("Authorization") String token,@PathVariable Integer pid ) throws Exception{
         try{
@@ -115,4 +149,12 @@ public class PatJournalController {
 @Data
 class ListObj{
     private int ttype,compl,assig;
+}
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+class AskObj{
+    private int did,pid;
+    private String note;
 }

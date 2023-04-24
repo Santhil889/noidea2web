@@ -3,6 +3,7 @@ package com.example.noidea2.controller.auth;
 import com.example.noidea2.model.auth.AuthRequest;
 import com.example.noidea2.model.auth.Creds;
 import com.example.noidea2.repo.auth.CredsRepo;
+import com.example.noidea2.repo.consult.ConsultRepo;
 import com.example.noidea2.util.JwtUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -22,6 +24,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.net.http.HttpHeaders;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @CrossOrigin
@@ -32,7 +35,13 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private CredsRepo credsRepo;
+
+    @Autowired
+    private ConsultRepo consultRepo;
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -43,6 +52,21 @@ public class AuthController {
         message.setText(body);
 
         javaMailSender.send(message);
+    }
+
+    public String gneratePassword() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        return generatedString;
     }
 
     @PostMapping("/try/something")
@@ -90,33 +114,35 @@ public class AuthController {
         Creds c=credsRepo.findByUsername(uname);
         if(c.getRole()!=0) throw new Exception("Chal na admin ko bhej");
         try{
+            String genpass= gneratePassword();
+            registerRequest.setPassword(passwordEncoder.encode(genpass));
             Creds ct = credsRepo.save(registerRequest);
-//            sendEmail("santhilkalantre@gmail.com",
-//                    "Your Credentials for Accessing the Medical Records System",
-//                    "Dear Doctor,\n" +
-//                            "\n" +
-//                            "I am writing to provide you with your login credentials for accessing our medical records system. As an authorized user, you will be able to access patient medical records and update them as needed.\n" +
-//                            "\n" +
-//                            "Your login credentials are as follows:\n" +
-//                            "\n" +
-//                            "Username: "+registerRequest.getUsername()+"\n" +
-//                            "Password: "+ registerRequest.getPassword() +"\n" +
-//                            "\n" +
-//                            "Please note that the password provided is case sensitive and must be kept confidential to ensure the security of patient data.\n" +
-//                            "\n" +
-//                            "To access the system, please visit [Insert Website URL] and enter your login credentials. If you experience any difficulties or have questions, please do not hesitate to contact our IT support team at [Insert Contact Information].\n" +
-//                            "\n" +
-//                            "Thank you for joining our team, and we look forward to working with you.\n" +
-//                            "\n" +
-//                            "Best regards,\n" +
-//                            "\n" +
-//                            "Admin\n" +
-//                            "admin@admin.com\n" +
-//                            "+91-10110101\n" +
-//                            "\n" +
-//                            "\n" +
-//                            "\n" +
-//                            "\n");
+            sendEmail(registerRequest.getEmail(),
+                    "Your Credentials for Accessing the Medical Records System",
+                    "Dear Doctor,\n" +
+                            "\n" +
+                            "I am writing to provide you with your login credentials for accessing our medical records system. As an authorized user, you will be able to access patient medical records and update them as needed.\n" +
+                            "\n" +
+                            "Your login credentials are as follows:\n" +
+                            "\n" +
+                            "Username: "+registerRequest.getUsername()+"\n" +
+                            "Password: "+ genpass +"\n" +
+                            "\n" +
+                            "Please note that the password provided is case sensitive and must be kept confidential to ensure the security of patient data.\n" +
+                            "\n" +
+                            "To access the system, please visit [Insert Website URL] and enter your login credentials. If you experience any difficulties or have questions, please do not hesitate to contact our IT support team at [Insert Contact Information].\n" +
+                            "\n" +
+                            "Thank you for joining our team, and we look forward to working with you.\n" +
+                            "\n" +
+                            "Best regards,\n" +
+                            "\n" +
+                            "Admin\n" +
+                            "admin@admin.com\n" +
+                            "+91-10110101\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n");
             return ct.getId();
         }catch (Exception ex){
 //            System.out.println(ex);
@@ -156,9 +182,10 @@ public class AuthController {
             String uname=jwtUtil.extractUsername(token);
             Creds c=credsRepo.findByUsername(uname);
             if(resetpwd.getRole() != credsRepo.findByUsername(uname).getRole()) throw new Exception("Something Invalid");
-            if(!c.getPassword().equals( resetpwd.getCurrentpwd())) throw new Exception("Invalid Current Pwd");
+            if(passwordEncoder.matches(resetpwd.getCurrentpwd(),c.getPassword())==false) throw new Exception("Invalid Current Pwd");
+//            if(!c.getPassword().equals( resetpwd.getCurrentpwd())) throw new Exception("Invalid Current Pwd");
             Creds t= c;
-            t.setPassword(resetpwd.getNewpwd());
+            t.setPassword(passwordEncoder.encode(resetpwd.getNewpwd()));
             credsRepo.save(t);
             return "Changed pwd successfully";
         }catch (Exception e){
@@ -175,9 +202,10 @@ public class AuthController {
             Creds c=credsRepo.findByUsername(uname);
             if(resetpwd.getRole() != credsRepo.findByUsername(uname).getRole()) throw new Exception("Something Invalid");
             System.out.println(c.getPassword());
-            if(!c.getPassword().equals(resetpwd.getCurrentpwd())) throw new Exception("Invalid Current Pwd");
+            if(passwordEncoder.matches(resetpwd.getCurrentpwd(),c.getPassword())==false) throw new Exception("Invalid Current Pwd");
+//            if(!c.getPassword().equals(resetpwd.getCurrentpwd())) throw new Exception("Invalid Current Pwd");
             Creds t= c;
-            t.setPassword(resetpwd.getNewpwd());
+            t.setPassword(passwordEncoder.encode(resetpwd.getNewpwd()));
             credsRepo.save(t);
             return t.getId();
         }catch (Exception e){
@@ -189,10 +217,72 @@ public class AuthController {
     public String forgotdoc(@RequestBody Forgotpwd forgotpwd)throws Exception{
         try{
             Creds c=credsRepo.findByUsername(forgotpwd.getUsername());
+            String newpass= gneratePassword();
             if(forgotpwd.getRole() != credsRepo.findByUsername(forgotpwd.getUsername()).getRole()) throw new Exception("Something Invalid");
-            c.setPassword("1234");
+                        sendEmail(c.getEmail(),
+                    "Your Credentials for Accessing the Medical Records System",
+                    "Dear User,\n" +
+                            "\n" +
+                            "I am writing to provide you with your login credentials for accessing our medical records system. As an authorized user, you will be able to access patient medical records and update them as needed.\n" +
+                            "\n" +
+                            "Your login credentials are as follows:\n" +
+                            "\n" +
+                            "Username: "+ c.getUsername() +"\n" +
+                            "Password: "+ newpass +"\n" +
+                            "\n" +
+                            "Please note that the password provided is case sensitive and must be kept confidential to ensure the security of patient data.\n" +
+                            "\n" +
+                            "To access the system, please visit [Insert Website URL] and enter your login credentials. If you experience any difficulties or have questions, please do not hesitate to contact our IT support team at [Insert Contact Information].\n" +
+                            "\n" +
+                            "Thank you for joining our team, and we look forward to working with you.\n" +
+                            "\n" +
+                            "Best regards,\n" +
+                            "\n" +
+                            "Admin\n" +
+                            "admin@admin.com\n" +
+                            "+91-10110101\n" +
+                            "\n" +
+                            "\n" +
+                            "\n" +
+                            "\n");
+            c.setPassword(passwordEncoder.encode(newpass));
             credsRepo.save(c);
-            return "Retset Doc Password";
+            return "Retset Password";
+        }catch (Exception e){
+            throw e;
+        }
+    }
+
+    @PostMapping("/notify/{pid}")
+    public String notifypid(@RequestHeader("Authorization") String token,@PathVariable int pid) throws Exception{
+        try{
+            token=token.substring(7);
+            String uname=jwtUtil.extractUsername(token);
+            Creds c=credsRepo.findByUsername(uname);
+            Creds pat= credsRepo.findById(pid);
+            if(c.getRole()==1 && consultRepo.getByConsultId_Pid(pid).getConsultId().getDid()==c.getId()){
+                sendEmail(pat.getEmail(),
+                        "Encouraging you to use our Medical App",
+                        "Dear "+pat.getUsername()+",\n" +
+                                "\n" +
+                                "I hope this email finds you in good health. As your doctor, I am writing to encourage you to use our medical app more often to manage your health.\n" +
+                                "\n" +
+                                "The medical app we have provided is an excellent tool that helps you to keep track of your health records, medication schedules, and other important health-related tasks. It also enables us to communicate with you directly and provide you with any necessary updates or reminders.\n" +
+                                "\n" +
+                                "I have noticed that you have some assigned tasks pending in the app, and I wanted to remind you to complete them as soon as possible. Completing these tasks is essential to ensuring that you receive the best possible care and that we have a complete understanding of your medical history.\n" +
+                                "\n" +
+                                "If you have any questions or concerns about the assigned tasks, please do not hesitate to contact me or our support team through the app or by phone. We are always here to help you.\n" +
+                                "\n" +
+                                "I strongly encourage you to use the medical app regularly to manage your health and stay up-to-date with your health records. By doing so, you will be able to take control of your health and ensure that you are receiving the best possible care.\n" +
+                                "\n" +
+                                "Thank you for being our patient, and we look forward to helping you achieve optimal health.\n" +
+                                "\n" +
+                                "Best regards,\n" +
+                                "\n" +
+                                c.getUsername()+"\n" +
+                                c.getEmail()+"\n");
+                return "Sent Mail";
+            }else throw new Exception("Wrong doctor");
         }catch (Exception e){
             throw e;
         }

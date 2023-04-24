@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -30,6 +31,9 @@ public class Noidea2Application {
 	private CredsRepo credsRepo;
 
 	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
 	private AssignedTaskRepo assignedTaskRepo;
 
 //	@Autowired
@@ -37,7 +41,7 @@ public class Noidea2Application {
 //
 	@PostConstruct
 	public void initAdmin(){
-		Creds a=new Creds(1,"admin","admin@admin.com","admin",0);
+		Creds a=new Creds(1,"admin","admin@admin.com",passwordEncoder.encode("admin"),0);
 		credsRepo.save(a);
 	}
 
@@ -45,18 +49,22 @@ public class Noidea2Application {
 	public void initTask(){
 //		Creds a=new Creds(1,"admin","admin@admin.com","admin",0);
 		List<Task> tasks= Stream.of(
-				new Task(1,1,null,"TYPE 1 TASK 1"),
-				new Task(2,1,null,"TYPE 1 TASK 2"),
-				new Task(3,1,null,"TYPE 1 TASK 3"),
-				new Task(4,1,null,"TYPE 1 TASK 4"),
-				new Task(5,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 1"),
-				new Task(6,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 2"),
-				new Task(7,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 3"),
-				new Task(8,2,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 2 TASK 4"),
-				new Task(9,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 1"),
-				new Task(10,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 2"),
-				new Task(11,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 3"),
-				new Task(12,3,"https://www.youtube.com/shorts/2Qd5aj5efrQ","TYPE 3 TASK 4")
+				new Task(1,1,null,"Run for 30 mins"),
+				new Task(2,1,null,"Lift Weights"),
+				new Task(3,1,null,"Talk to a friend"),
+				new Task(4,1,null,"Meditate for 15 mins"),
+				new Task(13,1,null,"Surya Namaskar 3 times"),
+				new Task(14,1,null,"Perform Breating Exercise"),
+
+				new Task(5,2,"https://www.youtube.com/embed/rCSCPujLs14","Deep Sleep"),
+				new Task(6,2,"https://www.youtube.com/embed/iz0yM5YoIow","How to stay happy"),
+				new Task(7,2,"https://www.youtube.com/embed/HwLK9dBQn0g","The Power of Postitivity"),
+				new Task(8,2,"https://www.youtube.com/embed/XqdDMNExvA0","How I Organize My Busy Schedule"),
+
+				new Task(9,3,"https://www.scotthyoung.com/blog/2007/07/29/what-do-you-want-to-do-with-your-life/","What Do You Want to Do With Your Life?"),
+				new Task(10,3,"https://www.scotthyoung.com/blog/2008/02/19/walk-your-talk-one-step-at-a-time/","Walk Your Talk… One Step at a Time"),
+				new Task(11,3,"https://timesofindia.indiatimes.com/readersblog/sayantantoiblogs/benefits-of-staying-fit-and-healthy-39311/","Benefits of staying fit and healthy"),
+				new Task(12,3,"https://newsinhealth.nih.gov/2018/03/creating-healthy-habits","Creating Healthy Habits")
 		).collect(Collectors.toList());
 		taskRepo.saveAll(tasks);
 	}
