@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
@@ -23,6 +24,7 @@ public class Chat {
     @Id
     private Date sentwhen;
     @NotNull
+    @Convert(converter = Encrypt.class)
     private String msg;
     @NotNull
     private int sentfrom;

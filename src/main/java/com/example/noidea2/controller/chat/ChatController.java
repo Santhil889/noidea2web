@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -33,6 +34,8 @@ public class ChatController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private AssignedTaskRepo assignedTaskRepo;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private ChatRepo chatRepo;
 

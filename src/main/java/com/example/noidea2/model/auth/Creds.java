@@ -20,6 +20,7 @@ public class Creds {
     private Integer id;
     @Column(unique = true)
     private String username;
+    @Column(unique = true)
     private String email;
     private String password;
     private Integer role;

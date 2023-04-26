@@ -262,21 +262,15 @@ public class AuthController {
             Creds pat= credsRepo.findById(pid);
             if(c.getRole()==1 && consultRepo.getByConsultId_Pid(pid).getConsultId().getDid()==c.getId()){
                 sendEmail(pat.getEmail(),
-                        "Encouraging you to use our Medical App",
+                        "Task Update: You've Got This!",
                         "Dear "+pat.getUsername()+",\n" +
                                 "\n" +
-                                "I hope this email finds you in good health. As your doctor, I am writing to encourage you to use our medical app more often to manage your health.\n" +
-                                "\n" +
-                                "The medical app we have provided is an excellent tool that helps you to keep track of your health records, medication schedules, and other important health-related tasks. It also enables us to communicate with you directly and provide you with any necessary updates or reminders.\n" +
-                                "\n" +
-                                "I have noticed that you have some assigned tasks pending in the app, and I wanted to remind you to complete them as soon as possible. Completing these tasks is essential to ensuring that you receive the best possible care and that we have a complete understanding of your medical history.\n" +
-                                "\n" +
-                                "If you have any questions or concerns about the assigned tasks, please do not hesitate to contact me or our support team through the app or by phone. We are always here to help you.\n" +
-                                "\n" +
-                                "I strongly encourage you to use the medical app regularly to manage your health and stay up-to-date with your health records. By doing so, you will be able to take control of your health and ensure that you are receiving the best possible care.\n" +
-                                "\n" +
-                                "Thank you for being our patient, and we look forward to helping you achieve optimal health.\n" +
-                                "\n" +
+                                "Just a friendly reminder about the task assigned to you at MindfulMilestones. We believe in your ability to complete it and make progress towards your goals. You're capable of achieving great things! \n" +
+                                "\n"+
+                                "If you require any support, please know that our team of experts, including our doctors, are available to assist you. Don't hesitate to reach out if you need any guidance or assistance. \n" +
+                                "\n"+
+                                "You've got this,"+ pat.getUsername() +"! We're here to support you every step of the way.\n" +
+                                "\n"+
                                 "Best regards,\n" +
                                 "\n" +
                                 c.getUsername()+"\n" +

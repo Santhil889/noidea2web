@@ -1,6 +1,7 @@
 package com.example.noidea2.controller.ques;
 
 import com.example.noidea2.model.auth.Creds;
+import com.example.noidea2.model.consult.Consult;
 import com.example.noidea2.model.pat.PatDetails;
 import com.example.noidea2.model.ques.Question;
 import com.example.noidea2.model.ques.QuestionId;
@@ -45,10 +46,15 @@ public class QuestionController {
             if (c.getRole() != 2) throw new Exception("error");
             question.getQuestionId().setPid(c.getId());
             question.getQuestionId().setFilledtime(new Date());
-            int score= calcScore(question);
+            float score= calcScore(question);
             PatDetails pd= patRepo.findByPid(question.getQuestionId().getPid());
             pd.setScore(score);
             Question q = questionRepo.save(question);
+            if(consultRepo.getByConsultId_Pid(c.getId()).getConsultId() != null){
+                Consult ct= consultRepo.getByConsultId_Pid(c.getId());
+                ct.setIslastconsulted(null);
+                consultRepo.save(ct);
+            }
             return q.getQuestionId();
         }catch (Exception e){
             throw e;
@@ -78,7 +84,7 @@ public class QuestionController {
 
 
 
-    private int calcScore(Question question) {
+    private float calcScore(Question question) {
         int q1,q2,q3,q4,q5,q6,q7,q8;
         q1= question.getQ1();
         q2= question.getQ2();
@@ -88,6 +94,6 @@ public class QuestionController {
         q6= question.getQ6();
         q7= question.getQ7();
         q8= question.getQ8();
-        return (q1+q2+q3+q4+q5+q6+q7+q8)/8;
+        return (float)(q1+q2+q3+q4+q5+q6+q7+q8)/8;
     }
 }

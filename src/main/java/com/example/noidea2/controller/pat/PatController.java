@@ -4,6 +4,7 @@ import com.example.noidea2.model.auth.AuthRequest;
 import com.example.noidea2.model.auth.Creds;
 import com.example.noidea2.model.pat.PatDetails;
 import com.example.noidea2.repo.auth.CredsRepo;
+import com.example.noidea2.repo.consult.ConsultRepo;
 import com.example.noidea2.repo.pat.PatRepo;
 import com.example.noidea2.util.JwtUtil;
 import lombok.AllArgsConstructor;
@@ -41,6 +42,8 @@ public class PatController {
 
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private ConsultRepo consultRepo;
 
     public void sendEmail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -58,28 +61,17 @@ public class PatController {
             String p= pd.getPassword();
             pd.setPassword(passwordEncoder.encode(pd.getPassword()));
             sendEmail(pd.getEmail(),
-                    "Your Credentials for Accessing the Medical Records System",
-                    "Dear Doctor,\n" +
+                    "Subject: Welcome to MindfulMilestones!",
+                    "Dear "+ pd.getUsername() +",\n" +
                             "\n" +
-                            "I am writing to provide you with your login credentials for accessing our medical records system. As an authorized user, you will be able to access patient medical records and update them as needed.\n" +
+                            "Welcome to MindfulMilestones! We're thrilled to have you as a registered user. Thank you for choosing us.\n" +
                             "\n" +
-                            "Your login credentials are as follows:\n" +
+                            "At MindfulMilestones, we're dedicated to providing you with exceptional mindfulness tools and resources. As a registered user, you now have access to our premium features designed to help you on your mindfulness journey. We're here to assist you in any way we can, so feel free to reach out if you need any help.\n" +
                             "\n" +
-                            "Username: "+pd.getUsername()+"\n" +
-                            "Password: "+ p +"\n" +
+                            "Once again, welcome to MindfulMilestones! We're excited to serve you and support you in achieving your mindfulness goals.\n" +
                             "\n" +
-                            "Please note that the password provided is case sensitive and must be kept confidential to ensure the security of patient data.\n" +
-                            "\n" +
-                            "To access the system, please visit [Insert Website URL] and enter your login credentials. If you experience any difficulties or have questions, please do not hesitate to contact our IT support team at [Insert Contact Information].\n" +
-                            "\n" +
-                            "Thank you for joining our team, and we look forward to working with you.\n" +
-                            "\n" +
-                            "Best regards,\n" +
-                            "\n" +
-                            "Admin\n" +
-                            "admin@admin.com\n" +
-                            "+91-10110101\n" +
-                            "\n" +
+                            "Best, \n"+
+                            "MindfulMilestones\n" +
                             "\n" +
                             "\n" +
                             "\n");
@@ -107,8 +99,9 @@ public class PatController {
         }
         String xyz=jwtUtil.generateToken(pd.getUsername());
         Creds tt= credsRepo.findByUsername(pd.getUsername());
-
-        return new PatReruenObj(xyz,tt.getId());
+        if(consultRepo.getByConsultId_Pid(tt.getId())!=null)
+            return new PatReruenObj(xyz,tt.getId(),consultRepo.getByConsultId_Pid(tt.getId()).getConsultId().getDid());
+        return new PatReruenObj(xyz,tt.getId(),null);
     }
 
     @PostMapping("/pat/savedetail")
@@ -171,5 +164,6 @@ public class PatController {
 @Data
 class PatReruenObj{
     private String token;
-    private int id;
+    private int pid;
+    private Integer did;
 }
